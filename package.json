@@ -1,0 +1,32 @@
+{
+  "name": "seitenca-extensions",
+  "version": "0.0.1",
+  "author": "Seitenca",
+  "license": "GPL-3.0-or-later",
+  "repositoryName": "Seitenca's Extensions",
+  "description": "Seitenca's extensions for Paperback!",
+  "main": "index.js",
+  "scripts": {
+    "build": "paperback bundle",
+    "dev": "paperback serve",
+    "test": "paperback test",
+    "nodemon": "nodemon"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/cheerio": "^0.22.31",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "eslint": "^8.47.0",
+    "eslint-plugin-modules-newline": "^0.0.6",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@paperback/toolchain": "^0.8.0-alpha.47",
+    "@paperback/types": "^0.8.0-alpha.47",
+    "cheerio": "^1.0.0-rc.12",
+    "entities": "^4.5.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1"
+  }
+}
