@@ -23,7 +23,6 @@ import {
 } from '@paperback/types'
 
 import {
-    parseChapters,
     parseHomeSections,
     parseMangaDetails,
     parseViewMore
@@ -33,7 +32,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '0.0.23',
+    version: '0.0.41',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -54,7 +53,7 @@ export const OlympusScanInfo: SourceInfo = {
 export class OlympusScan implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
     requestManager = App.createRequestManager({
         requestsPerSecond: 5,
-        requestTimeout: 15000,
+        requestTimeout: 40000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {
@@ -94,8 +93,31 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
-        const data = await this.getData(`${OS_API_DOMAIN}/series/${mangaId}/chapters`)
-        return parseChapters(data.data, mangaId)
+        const chapters: Chapter[] = []
+        const total_pages_data = await this.getData(`${OS_API_DOMAIN}/series/${mangaId}/chapters`)
+        const total_pages: number = total_pages_data.meta.last_page ?? 1
+
+        for (let index = 1; index <= total_pages; index++) {
+            const data = await this.getData(`${OS_API_DOMAIN}/series/${mangaId}/chapters?page=${index}`)
+            for (const chapter of data.data) {
+                const number = Number(chapter.name)
+                const title = `Chapter ${number}`
+                const date = new Date(chapter.published_at)
+                chapters.push(App.createChapter({
+                    id: String(chapter.id),
+                    name: title,
+                    langCode: '🇪🇸',
+                    chapNum: number,
+                    time: date
+                }))
+            }
+        }
+
+        if (chapters.length == 0) {
+            throw new Error(`Couldn't find any chapters for mangaId: ${mangaId}!`)
+        }
+
+        return chapters
     }
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
@@ -116,7 +138,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
             data.data.forEach((element: any) => {
                 manga.push(App.createPartialSourceManga({
                     mangaId: element.slug,
-                    image: element.cover.replace(/ /g, '%20'),
+                    image: element.cover,
                     title: element.name
                 }))
             })
@@ -125,7 +147,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
             data.data.series.data.forEach((element: any) => {
                 manga.push(App.createPartialSourceManga({
                     mangaId: element.slug,
-                    image: element.cover.replace(/ /g, '%20'),
+                    image: element.cover,
                     title: element.name
                 }))
             })
@@ -139,7 +161,17 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
         const new_chapters_data = await this.getData(`${OS_API_DOMAIN}/sf/new-chapters?page=1`)
+        const popular_comics_data = await this.getData(`${OS_API_DOMAIN}/sf/home`)
         const sections = [
+            {
+                data: JSON.parse(popular_comics_data.data.popular_comics),
+                section: App.createHomeSection({
+                    id: 'popular_comics',
+                    title: 'Populares Del Dia',
+                    containsMoreItems: false,
+                    type: HomeSectionType.featured
+                })
+            },
             {
                 data: new_chapters_data.data,
                 section: App.createHomeSection({

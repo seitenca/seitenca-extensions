@@ -7,11 +7,16 @@ import {
     PartialSourceManga,
 } from '@paperback/types'
 
-import { MangaDetails, ChaptersDetails, HomePageDetails } from './OlympusScanInterfaces'
+import { MangaDetails, ChaptersDetails } from './OlympusScanInterfaces'
 
 export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceManga => {
     const titles: string[] = [data.name ?? '']
-    const author = data.team.name ?? ''
+    let author
+    try {
+        author = data.team.name ?? ''
+    } catch (e) {
+        author = ''
+    }
     const description = data.summary ?? 'No description available'
     const arrayTags: Tag[] = []
     for (const tag of data?.genres) {
@@ -50,6 +55,7 @@ export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceMa
     })
 }
 
+
 export const parseChapters = (data: ChaptersDetails[], mangaId: string): Chapter[] => {
     const chapters: Chapter[] = []
     for (const chapter of data) {
@@ -70,6 +76,7 @@ export const parseChapters = (data: ChaptersDetails[], mangaId: string): Chapter
     return chapters
 }
 
+
 export const parseHomeSections = (sections: any, sectionCallback: (section: HomeSection) => void): void => {
     const collectedIds: string[] = []
 
@@ -80,7 +87,11 @@ export const parseHomeSections = (sections: any, sectionCallback: (section: Home
             const title = manga.name ?? ''
             const id = manga.slug ?? ''
             const image = manga.cover.replace(/ /g, "%20") ?? ''
-            const subtitle = `Capitulo ${manga.last_chapters[0].name}`
+            try {
+                var subtitle = `Capitulo ${manga.last_chapters[0].name}`
+            } catch (e) {
+                var subtitle = ''
+            }
 
             if (!id || !title || collectedIds.includes(manga.id.toString())) continue
             mangaItemsArray.push(App.createPartialSourceManga({
