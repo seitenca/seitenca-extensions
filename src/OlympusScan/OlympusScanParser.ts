@@ -80,11 +80,13 @@ export const parseHomeSections = (sections: any, sectionCallback: (section: Home
             const title = manga.name ?? ''
             const id = manga.slug ?? ''
             const image = manga.cover.replace(/ /g, "%20") ?? ''
+            const subtitle = `Capitulo ${manga.last_chapters[0].name}`
 
             if (!id || !title || collectedIds.includes(manga.id.toString())) continue
             mangaItemsArray.push(App.createPartialSourceManga({
                 image: image,
                 title: title,
+                subtitle: subtitle,
                 mangaId: id,
             }))
 
@@ -111,12 +113,14 @@ export const parseViewMore = (homepageSectionId: string, data: any): PartialSour
         const title = manga.name ?? ''
         const id = manga.slug ?? ''
         const image = manga.cover.replace(/ /g, "%20") ?? ''
+        const subtitle = `Capitulo ${manga.last_chapters[0].name}`
 
         if (!id || !title || collectedIds.includes(manga.id.toString())) continue
         moreManga.push(App.createPartialSourceManga({
             image: image,
             title: title,
             mangaId: id,
+            subtitle: subtitle
         }))
         collectedIds.push(manga.id.toString())
     }

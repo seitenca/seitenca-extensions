@@ -33,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '0.0.18',
+    version: '0.0.23',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -53,7 +53,7 @@ export const OlympusScanInfo: SourceInfo = {
 
 export class OlympusScan implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
     requestManager = App.createRequestManager({
-        requestsPerSecond: 3,
+        requestsPerSecond: 5,
         requestTimeout: 15000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
@@ -166,16 +166,17 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
 
     async getSearchTags(): Promise<TagSection[]> {
         const data = await this.getData(`${OS_API_DOMAIN}/genres-statuses`)
-        const arrayTags: Tag[] = []
+        const arrayGenres: Tag[] = []
         for (const genre of data.genres) {
-            arrayTags.push({ id: genre.id.toString(), label: genre.name })
+            arrayGenres.push({ id: genre.id.toString(), label: genre.name })
         }
-        return [App.createTagSection({ id: '0', label: 'genres', tags: arrayTags.map(x => App.createTag(x)) })]
+        const arrayStatus: Tag[] = []
+        for (const status of data.statuses) {
+            arrayStatus.push({ id: status.id.toString(), label: status.name })
+        }
+        return [
+            App.createTagSection({ id: '0', label: 'genres', tags: arrayGenres.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '1', label: 'status', tags: arrayStatus.map(x => App.createTag(x)) })
+        ]
     }
 }
-
-
-
-
-
-
