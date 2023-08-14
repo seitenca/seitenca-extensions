@@ -1,15 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Chapter,
     Tag,
     SourceManga,
     TagSection,
     HomeSection,
-    PartialSourceManga,
+    PartialSourceManga
 } from '@paperback/types'
 
-import { MangaDetails, ChaptersDetails } from './OlympusScanInterfaces'
-
-export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceManga => {
+export const parseMangaDetails = (data: any, mangaId: string): SourceManga => {
     const titles: string[] = [data.name ?? '']
     let author
     try {
@@ -19,7 +18,7 @@ export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceMa
     }
     const description = data.summary ?? 'No description available'
     const arrayTags: Tag[] = []
-    for (const tag of data?.genres) {
+    for (const tag of data.genres) {
         arrayTags.push({ id: tag.id.toString() ?? '', label: tag.name ?? '' })
     }
 
@@ -46,7 +45,7 @@ export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceMa
         id: mangaId,
         mangaInfo: App.createMangaInfo({
             titles: titles,
-            image: data.cover.replace(/ /g, "%20"),
+            image: data.cover.replace(/ /g, '%20'),
             status: status,
             author: author ?? '',
             tags: tagSections,
@@ -56,7 +55,7 @@ export const parseMangaDetails = (data: MangaDetails, mangaId: string): SourceMa
 }
 
 
-export const parseChapters = (data: ChaptersDetails[], mangaId: string): Chapter[] => {
+export const parseChapters = (data: any, mangaId: string): Chapter[] => {
     const chapters: Chapter[] = []
     for (const chapter of data) {
         const number = Number(chapter.name)
@@ -86,11 +85,12 @@ export const parseHomeSections = (sections: any, sectionCallback: (section: Home
         for (const manga of section.data) {
             const title = manga.name ?? ''
             const id = manga.slug ?? ''
-            const image = manga.cover.replace(/ /g, "%20") ?? ''
+            const image = manga.cover.replace(/ /g, '%20') ?? ''
+            let subtitle
             try {
-                var subtitle = `Capitulo ${manga.last_chapters[0].name}`
+                subtitle = `Capitulo ${manga.last_chapters[0].name}`
             } catch (e) {
-                var subtitle = ''
+                subtitle = ''
             }
 
             if (!id || !title || collectedIds.includes(manga.id.toString())) continue
@@ -98,7 +98,7 @@ export const parseHomeSections = (sections: any, sectionCallback: (section: Home
                 image: image,
                 title: title,
                 subtitle: subtitle,
-                mangaId: id,
+                mangaId: id
             }))
 
             collectedIds.push(manga.id.toString())
@@ -123,7 +123,7 @@ export const parseViewMore = (homepageSectionId: string, data: any): PartialSour
     for (const manga of mangaData) {
         const title = manga.name ?? ''
         const id = manga.slug ?? ''
-        const image = manga.cover.replace(/ /g, "%20") ?? ''
+        const image = manga.cover.replace(/ /g, '%20') ?? ''
         const subtitle = `Capitulo ${manga.last_chapters[0].name}`
 
         if (!id || !title || collectedIds.includes(manga.id.toString())) continue
