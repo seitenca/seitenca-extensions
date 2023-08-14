@@ -33,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '1.0.6',
+    version: '1.0.10',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -133,6 +133,18 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1
         const manga: PartialSourceManga[] = []
+        const tags: string[] = ['', '', '']
+
+        query?.includedTags?.map((x: Tag) => x.id).forEach((x: string) => {
+            if (x.startsWith('status-id-')) {
+                tags[1] = '&status=' + x.replace('status-id-', '')
+            } else if (x == 'comic' || x == 'novel') {
+                tags[2] = '&type=' + x
+            } else {
+                tags[0] = '&genres=' + x
+            }
+        })
+
 
         if (query.title) {
             const data = await this.getData(`${OS_API_DOMAIN}/search?name=${encodeURI(query.title)}&page=${page}`)
@@ -144,7 +156,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
                 }))
             })
         } else {
-            const data = await this.getData(`${OS_API_DOMAIN}/series?page=${page}&genres=${query?.includedTags?.map((x: Tag) => x.id)[0]}`)
+            const data = await this.getData(`${OS_API_DOMAIN}/series?page=${page}${tags[0]}${tags[1]}${tags[2]}`)
             data.data.series.data.forEach((element: any) => {
                 manga.push(App.createPartialSourceManga({
                     mangaId: element.slug,
@@ -205,11 +217,11 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
         }
         const arrayStatus: Tag[] = []
         for (const status of data.statuses) {
-            arrayStatus.push({ id: status.id.toString(), label: status.name })
+            arrayStatus.push({ id: 'status-id-' + status.id.toString(), label: status.name })
         }
         const typeStatus: Tag[] = []
-        typeStatus.push({ id: '1', label: 'comic' })
-        typeStatus.push({ id: '2', label: 'novel' })
+        typeStatus.push({ id: 'comic', label: 'Comic' })
+        typeStatus.push({ id: 'novel', label: 'Novela' })
 
         return [
             App.createTagSection({ id: '0', label: 'genres', tags: arrayGenres.map(x => App.createTag(x)) }),
