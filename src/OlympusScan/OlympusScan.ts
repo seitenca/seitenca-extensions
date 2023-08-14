@@ -33,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.5',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -207,9 +207,14 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
         for (const status of data.statuses) {
             arrayStatus.push({ id: status.id.toString(), label: status.name })
         }
+        const typeStatus: Tag[] = []
+        typeStatus.push({ id: '1', label: 'comic' })
+        typeStatus.push({ id: '2', label: 'novel' })
+
         return [
             App.createTagSection({ id: '0', label: 'genres', tags: arrayGenres.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '1', label: 'status', tags: arrayStatus.map(x => App.createTag(x)) })
+            App.createTagSection({ id: '1', label: 'status', tags: arrayStatus.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '2', label: 'type', tags: typeStatus.map(x => App.createTag(x)) })
         ]
     }
 }
