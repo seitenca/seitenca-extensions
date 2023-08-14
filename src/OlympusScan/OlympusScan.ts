@@ -32,7 +32,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '0.0.42',
+    version: '0.0.2',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -52,8 +52,8 @@ export const OlympusScanInfo: SourceInfo = {
 
 export class OlympusScan implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
     requestManager = App.createRequestManager({
-        requestsPerSecond: 5,
-        requestTimeout: 40000,
+        requestsPerSecond: 4,
+        requestTimeout: 15000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {
@@ -152,7 +152,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
                 }))
             })
         }
-
+        metadata = { page: page + 1 }
         return App.createPagedResults({
             results: manga,
             metadata
@@ -186,10 +186,10 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        const offset: number = metadata?.offset ?? 0
-        const data = await this.getData(`${OS_API_DOMAIN}/sf/new-chapters?page=${offset}`)
-        const manga = parseViewMore(homepageSectionId, data.data)
+        const offset: number = metadata?.offset ?? 1
         metadata = { offset: offset + 1 }
+        const data = await this.getData(`${OS_API_DOMAIN}/sf/new-chapters?page=${metadata.offset}`)
+        const manga = parseViewMore(homepageSectionId, data.data)
         return App.createPagedResults({
             results: manga,
             metadata
