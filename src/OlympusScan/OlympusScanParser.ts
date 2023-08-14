@@ -28,30 +28,12 @@ export const parseMangaDetails = (data: any, mangaId: string): SourceManga => {
     }
 
     const tagSections: TagSection[] = [App.createTagSection({ id: '0', label: 'genres', tags: arrayTags.map(x => App.createTag(x)) })]
-    let status = 'ONGOING'
-    switch (data?.status?.name.toUpperCase()) {
-        case 'ACTIVO':
-            status = 'Ongoing'
-            break
-        case 'FINALIZADO':
-            status = 'Completed'
-            break
-        case 'ABANDONADO POR EL SCAN':
-            status = 'Abandoned'
-            break
-        case 'PAUSADO POR EL AUTOR (HIATUS)':
-            status = 'Hiatus'
-            break
-        default:
-            status = 'Ongoing'
-            break
-    }
     return App.createSourceManga({
         id: mangaId,
         mangaInfo: App.createMangaInfo({
             titles: titles,
             image: encodeURI(decodeURI(decodeHTMLEntity(data.cover?.trim() ?? ''))),
-            status: status,
+            status: data?.status?.name,
             author: author ?? '',
             tags: tagSections,
             desc: description
