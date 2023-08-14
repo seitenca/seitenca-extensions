@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-    Chapter,
     Tag,
     SourceManga,
     TagSection,
     HomeSection,
     PartialSourceManga
 } from '@paperback/types'
+
+import entities = require('entities')
+
+export function decodeHTMLEntity(str: string) {
+    return entities.decodeHTML(str)
+}
 
 export const parseMangaDetails = (data: any, mangaId: string): SourceManga => {
     const titles: string[] = [data.name ?? '']
@@ -45,34 +50,13 @@ export const parseMangaDetails = (data: any, mangaId: string): SourceManga => {
         id: mangaId,
         mangaInfo: App.createMangaInfo({
             titles: titles,
-            image: data.cover.replace(/ /g, '%20'),
+            image: encodeURI(decodeURI(decodeHTMLEntity(data.cover?.trim() ?? ''))),
             status: status,
             author: author ?? '',
             tags: tagSections,
             desc: description
         })
     })
-}
-
-
-export const parseChapters = (data: any, mangaId: string): Chapter[] => {
-    const chapters: Chapter[] = []
-    for (const chapter of data) {
-        const number = Number(chapter.name)
-        const title = `Chapter ${number}`
-        const date = new Date(chapter.published_at)
-        chapters.push(App.createChapter({
-            id: String(chapter.id),
-            name: title,
-            langCode: '🇪🇸',
-            chapNum: number,
-            time: date
-        }))
-    }
-    if (chapters.length == 0) {
-        throw new Error(`Couldn't find any chapters for mangaId: ${mangaId}!`)
-    }
-    return chapters
 }
 
 
@@ -85,7 +69,7 @@ export const parseHomeSections = (sections: any, sectionCallback: (section: Home
         for (const manga of section.data) {
             const title = manga.name ?? ''
             const id = manga.slug ?? ''
-            const image = manga.cover.replace(/ /g, '%20') ?? ''
+            const image = encodeURI(decodeURI(decodeHTMLEntity(manga.cover?.trim() ?? '')))
             let subtitle
             try {
                 subtitle = `Capitulo ${manga.last_chapters[0].name}`
@@ -123,7 +107,7 @@ export const parseViewMore = (homepageSectionId: string, data: any): PartialSour
     for (const manga of mangaData) {
         const title = manga.name ?? ''
         const id = manga.slug ?? ''
-        const image = manga.cover.replace(/ /g, '%20') ?? ''
+        const image = encodeURI(decodeURI(decodeHTMLEntity(manga.cover?.trim() ?? '')))
         const subtitle = `Capitulo ${manga.last_chapters[0].name}`
 
         if (!id || !title || collectedIds.includes(manga.id.toString())) continue

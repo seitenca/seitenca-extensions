@@ -23,6 +23,7 @@ import {
 } from '@paperback/types'
 
 import {
+    decodeHTMLEntity,
     parseHomeSections,
     parseMangaDetails,
     parseViewMore
@@ -32,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.2',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -138,7 +139,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
             data.data.forEach((element: any) => {
                 manga.push(App.createPartialSourceManga({
                     mangaId: element.slug,
-                    image: element.cover,
+                    image: encodeURI(decodeURI(decodeHTMLEntity(element.cover?.trim() ?? ''))),
                     title: element.name
                 }))
             })
@@ -147,7 +148,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
             data.data.series.data.forEach((element: any) => {
                 manga.push(App.createPartialSourceManga({
                     mangaId: element.slug,
-                    image: element.cover,
+                    image: encodeURI(decodeURI(decodeHTMLEntity(element.cover?.trim() ?? ''))),
                     title: element.name
                 }))
             })
