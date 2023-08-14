@@ -33,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '1.0.5',
+    version: '1.0.6',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
@@ -187,7 +187,7 @@ export class OlympusScan implements SearchResultsProviding, MangaProviding, Chap
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        const offset: number = metadata?.offset ?? 1
+        const offset: number = metadata?.offset ?? 0
         metadata = { offset: offset + 1 }
         const data = await this.getData(`${OS_API_DOMAIN}/sf/new-chapters?page=${metadata.offset}`)
         const manga = parseViewMore(homepageSectionId, data.data)
