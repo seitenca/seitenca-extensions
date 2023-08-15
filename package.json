@@ -13,13 +13,13 @@
     "nodemon": "nodemon"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.2",
-    "@types/cheerio": "^0.22.31",
-    "@typescript-eslint/eslint-plugin": "^6.4.0",
-    "@typescript-eslint/parser": "^6.4.0",
-    "eslint": "^8.47.0",
+    "@tsconfig/recommended": "^1.0.3",
+    "@types/cheerio": "^0.22.33",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "eslint": "^8.52.0",
     "eslint-plugin-modules-newline": "^0.0.6",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@paperback/toolchain": "^0.8.0-alpha.47",
