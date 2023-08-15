@@ -33,7 +33,7 @@ const OS_DOMAIN = 'https://olympusv2.gg'
 const OS_API_DOMAIN = 'https://dashboard.olympusv2.gg/api'
 
 export const OlympusScanInfo: SourceInfo = {
-    version: '1.0.12',
+    version: '1.0.0',
     name: 'OlympusScan',
     icon: 'icon.png',
     author: 'Seitenca',
